@@ -2,20 +2,17 @@
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
-# IMPORT DISCORD.PY. ALLOWS ACCESS TO DISCORD'S API.
-# vtf-recruitment
-import smtplib
-from email.mime.text import MIMEText
-
-import discord
-import os
-import pymongo
-from pymongo import MongoClient
-from discord.ext import commands
 import random as r
 import smtplib
 from email.mime.multipart import MIMEMultipart
-from configs import credentials
+# IMPORT DISCORD.PY. ALLOWS ACCESS TO DISCORD'S API.
+# vtf-recruitment
+from email.mime.text import MIMEText
+
+import discord
+import pymongo
+from config import credentials
+from discord.ext import commands
 
 client = pymongo.MongoClient(
     'mongodb://' + credentials['username'] + ":" + credentials['password'] + credentials['database'])
@@ -107,7 +104,7 @@ async def requestOTP(ctx, emailID=""):
                         '_id': str(ctx.guild.id) + '_' + str(ctx.author.id),
                         'timestamp': datetime.datetime.now(),
                         'otp': otp,
-                        'email': emailID
+                        'email': emailID.lower()
                     }
                     verification.save(dict_object)
                     msg = MIMEMultipart()
