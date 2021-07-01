@@ -1,4 +1,4 @@
-# BOB-the-bot
+# BOB-the-Bot
 >This is a discord Bot created to manage college servers on discord.
 >This project is currently managed by Northeastern University's students.
 >The primary focus of this project is to manage verification in servers and 
