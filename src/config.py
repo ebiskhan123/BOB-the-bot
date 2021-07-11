@@ -1,12 +1,7 @@
-credentials = {
-    'username' : 'xxxx',
-    'password' : 'xxxx',
-    'emailID' : 'xxxx',
-    'emailPassword' : 'xxxx',
-    'database' : 'xxxx',
-    'token': 'xxxx'
-}
+
 emojiLocal = {
 'ACCEPT' : "\U00002705",
-'DENY' : "\U0000274e"
+'DENY' : "\U0000274e",
+'STONKSUP': "<:Stonks:832284727578460252>",
+'STONKSDOWN': "<:not_stonks:832284730593509376>"
 }

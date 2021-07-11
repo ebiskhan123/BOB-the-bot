@@ -12,7 +12,7 @@ from email.mime.text import MIMEText
 
 from dotenv import load_dotenv
 
-load_dotenv('./{0}.env'.format(os.getenv('MODE')))
+load_dotenv('./env/{0}.env'.format(os.getenv('ENV')))
 
 # import utils
 import discord
@@ -21,10 +21,23 @@ from discord.ext import commands
 
 
 
-from config import credentials, emojiLocal
+from config import emojiLocal
 from games.connect4 import ConnectFour
+
+# Database urls
+DB_URL = os.getenv('DATABASE_URL')
+DB_USERNAME = os.getenv('DATABASE_USERNAME')
+DB_PASSWORD = os.getenv('DATABASE_PASSWORD')
+
+# Email configuration
+EMAIL_ID = os.getenv('EMAIL_ID')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
+
+
+
+
 client = pymongo.MongoClient(
-    'mongodb://' + credentials['username'] + ":" + credentials['password'] + credentials['database'])
+    'mongodb://' + DB_USERNAME + ":" + DB_PASSWORD + DB_URL)
 
 
 load_dotenv()
@@ -39,7 +52,7 @@ emailUserMap = collection.emailUserMap
 userEmailMap = collection.userEmailMap
 emojiDict = collection.emojiDict
 
-prefix = "##"
+prefix = os.getenv('PREFIX')
 intents = discord.Intents.default()
 intents.members = True
 
@@ -125,8 +138,8 @@ async def requestOTP(ctx, emailID=""):
                     msg.attach(MIMEText("Your OTP is : " + otp, 'plain'))
                     server = smtplib.SMTP('smtp.gmail.com', 587)
                     server.starttls()
-                    server.login(credentials['emailID'], credentials['emailPassword'])
-                    server.sendmail(credentials['emailID'], emailID, msg.as_string())
+                    server.login(EMAIL_ID, EMAIL_PASSWORD)
+                    server.sendmail(EMAIL_ID, emailID, msg.as_string())
                     server.quit()
 
                     await ctx.send("Your OTP has been sent to your " + domainName[
@@ -404,4 +417,4 @@ async def getUser(ctx, comp):
 #     # await m.add_reaction(emojiLocal['ACCEPT'])
 #     # await m.add_reaction(emojiLocal['DENY'])
 
-bot.run(credentials['token'])
+bot.run(os.getenv('DISCORD_TOKEN'))
