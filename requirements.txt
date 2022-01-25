@@ -1,0 +1,6 @@
+pip>=18.0.0
+pymongo~=3.11.4
+discord.py
+python-dotenv
+
+

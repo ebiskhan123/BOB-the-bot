@@ -1,7 +1,7 @@
 # Press the green button in the gutter to run the script.
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
-
+import os
 import random as r
 import re
 import smtplib
@@ -10,14 +10,38 @@ from email.mime.multipart import MIMEMultipart
 # vtf-recruitment
 from email.mime.text import MIMEText
 
+from dotenv import load_dotenv
+
+load_dotenv('./env/{0}.env'.format(os.getenv('ENV')))
+
+# import utils
 import discord
 import pymongo
 from discord.ext import commands
 
-from config import credentials, emojiLocal
+
+
+from config import emojiLocal
 from games.connect4 import ConnectFour
+
+# Database urls
+DB_URL = os.getenv('DATABASE_URL')
+DB_USERNAME = os.getenv('DATABASE_USERNAME')
+DB_PASSWORD = os.getenv('DATABASE_PASSWORD')
+
+# Email configuration
+EMAIL_ID = os.getenv('EMAIL_ID')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
+
+
+
+
 client = pymongo.MongoClient(
-    'mongodb://' + credentials['username'] + ":" + credentials['password'] + credentials['database'])
+    'mongodb://' + DB_USERNAME + ":" + DB_PASSWORD + DB_URL)
+
+
+load_dotenv()
+
 db = client.test
 
 collection = db.database_collection
@@ -28,7 +52,7 @@ emailUserMap = collection.emailUserMap
 userEmailMap = collection.userEmailMap
 emojiDict = collection.emojiDict
 
-prefix = "##"
+prefix = os.getenv('PREFIX')
 intents = discord.Intents.default()
 intents.members = True
 
@@ -114,8 +138,8 @@ async def requestOTP(ctx, emailID=""):
                     msg.attach(MIMEText("Your OTP is : " + otp, 'plain'))
                     server = smtplib.SMTP('smtp.gmail.com', 587)
                     server.starttls()
-                    server.login(credentials['emailID'], credentials['emailPassword'])
-                    server.sendmail(credentials['emailID'], emailID, msg.as_string())
+                    server.login(EMAIL_ID, EMAIL_PASSWORD)
+                    server.sendmail(EMAIL_ID, emailID, msg.as_string())
                     server.quit()
 
                     await ctx.send("Your OTP has been sent to your " + domainName[
@@ -318,5 +342,79 @@ async def getUser(ctx, comp):
         return await ctx.bot.fetch_user(id)
     except:
         return None
+#
+# @bot.command(name="TTT")
+# async def neuTrivia(ctx,competitor):
+#     # msg = await ctx.send("{0} has started a game of MYSTERYGAME".format(ctx.author.name))
+#     # await msg.add_reaction(emojiLocal['STONKSUP'])
+#     # await msg.add_reaction(emojiLocal['STONKSDOWN'])
+#     # determining
+#     game_start_embed = utils.get_embed(title="TIC TAC TOE",desc="{0} has challenged {1} to a game of TIC-TAC-TOE".format(ctx.author.name,competitor),color=discord.Color.blue())
+#     game_start_embed.add_field(name="Accept",value="React with your chosen emojis to accept")
+#     game_start_embed.add_field(name="Deny", value="Ignore if you want to deny")
+#
+#     competitor = await getUser(ctx, competitor)
+#     msg = await ctx.send(embed=game_start_embed)
+#
+#     # Get emojis for playing the game.
+#
+#     # Check for users accepting the match
+#     user_one = False
+#     user_two = False
+#     emoji_one , emoji_two = None,None
+#     def check(reaction, user):
+#         nonlocal emoji_one,emoji_two,user_one,user_two
+#         reacted = reaction.emoji
+#         print(reacted,"OUTSIDE")
+#         print(user)
+#         if user == ctx.author:
+#             user_one = True
+#             emoji_one = reacted
+#             print(emoji_one,"EMOJI_ONE")
+#         elif user == competitor:
+#             user_two = True
+#             emoji_two = reacted
+#             print(emoji_two,"EMOJI_TWO")
+#
+#         return user_one and True
+#
+#
+#     try:
+#         reaction, user = await bot.wait_for('reaction_add', timeout=45.0, check=check)
+#         player_one = -1
+#         player_two = 1
+#
+#         board = [[0 for _ in range(3)] for _ in range(3)]
+#         rows = [0] * 3
+#         columns  = [0] * 3
+#         main_diagnol = anti_diagnol = 0
+#
+#
+#         def make_board_embed(rows=4,columns=4):
+#             board_embed = utils.get_embed(title="BOARD",desc="Type index to fill",color=discord.Color.blue())
+#
+#             for r in range(4):
+#                 board_embed.add_field(name="", value="", inline=False)
+#                 for c in range(4):
+#                     if  1 < c < 3:
+#                         board_embed.add_field(name="",value="|",inline=True)
+#                     if  1 < r < 3:
+#                         board_embed.add_field(name="",value="__",inline=True)
+#                     if not(1 < c < 3 and 1 < r < 3):
+#                         board_embed.add_field(name="", value=emoji_one, inline=True)
+#
+#             return board_embed
+#
+#         await ctx.send(embed = make_board_embed())
+#         print(emoji_two)
+#         print(emoji_one)
+#
+#     except TimeoutError:
+#         # reactor meltdown - defeat
+#         description = "Yall pussied out"
+#         embed = utils.get_embed("Defeat", description, discord.Color.red())
+#         await ctx.send(embed=embed)
+#     # await m.add_reaction(emojiLocal['ACCEPT'])
+#     # await m.add_reaction(emojiLocal['DENY'])
 
-bot.run(credentials['token'])
+bot.run(os.getenv('DISCORD_TOKEN'))
